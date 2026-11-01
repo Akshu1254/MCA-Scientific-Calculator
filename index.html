@@ -3,22 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>MCA Scientific Calculator</title>
-    <link rel="stylesheet" href="style.css">
+
+    <!-- CSS FILE LINK -->
+    <link rel="stylesheet" href="./style.css">
 </head>
+
 <body>
 
-    <div class="container">
+    <div class="main-container">
 
-        <header>
+        <header class="header">
             <div>
                 <p class="tag">MCA PROJECT</p>
                 <h1>Scientific Calculator</h1>
+                <p class="subtitle">Advanced Mathematical Calculator</p>
             </div>
-            <button id="angleMode" class="mode">DEG</button>
+
+            <button id="angleMode" class="mode-button">DEG</button>
         </header>
 
-        <div class="calculator">
+        <main class="calculator">
 
             <div class="screen">
                 <div id="expression">Ready</div>
@@ -74,15 +80,17 @@
                 Enter = Calculate | Backspace = Delete | Esc = Clear
             </p>
 
-        </div>
+        </main>
 
         <footer>
-            Built with HTML, CSS and JavaScript
+            <p>Scientific Calculator | MCA Project</p>
+            <p>Developed using HTML, CSS and JavaScript</p>
         </footer>
 
     </div>
 
-    <script src="script.js"></script>
+    <!-- JAVASCRIPT FILE LINK -->
+    <script src="./script.js"></script>
 
 </body>
 </html>
