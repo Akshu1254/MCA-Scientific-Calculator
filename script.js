@@ -1,17 +1,32 @@
 const display = document.getElementById("display");
-const expressionLine = document.getElementById("expression");
-const angleButton = document.getElementById("angleMode");
+
+const expressionLine =
+    document.getElementById("expression");
+
+const angleButton =
+    document.getElementById("angleMode");
 
 let expression = "";
 let answer = 0;
 let isDegree = true;
 
+
+// DISPLAY UPDATE
+
 function render() {
+
     display.value = expression || "0";
-    angleButton.textContent = isDegree ? "DEG" : "RAD";
+
+    angleButton.textContent =
+        isDegree ? "DEG" : "RAD";
+
 }
 
+
+// ADD VALUE
+
 function append(value) {
+
     if (expression === "Error") {
         expression = "";
     }
@@ -21,22 +36,45 @@ function append(value) {
     }
 
     expression += value;
+
     render();
+
 }
+
+
+// CLEAR ALL
 
 function clearAll() {
+
     expression = "";
+
     expressionLine.textContent = "Ready";
+
     render();
+
 }
+
+
+// DELETE LAST CHARACTER
 
 function deleteLast() {
+
     expression = expression.slice(0, -1);
+
     render();
+
 }
 
+
+// FACTORIAL
+
 function factorial(n) {
-    if (!Number.isInteger(n) || n < 0 || n > 170) {
+
+    if (
+        !Number.isInteger(n) ||
+        n < 0 ||
+        n > 170
+    ) {
         throw new Error("Invalid factorial");
     }
 
@@ -47,13 +85,23 @@ function factorial(n) {
     }
 
     return result;
+
 }
 
+
+// CALCULATOR ENGINE
+
 function calculate() {
+
     if (!expression) return;
 
     try {
-        let exp = expression
+
+        let exp = expression;
+
+        // BASIC OPERATORS
+
+        exp = exp
             .replaceAll("×", "*")
             .replaceAll("÷", "/")
             .replaceAll("π", "PI")
@@ -61,16 +109,36 @@ function calculate() {
             .replace(/\be\b/g, "E")
             .replaceAll("^", "**");
 
+        // SCIENTIFIC FUNCTIONS
+
         exp = exp
             .replace(/√\(/g, "sqrt(")
             .replace(/log\(/g, "log10(")
             .replace(/ln\(/g, "log(");
 
-        exp = exp
-            .replace(/(\d+(?:\.\d+)?)!/g, "factorial($1)")
-            .replace(/(\d+(?:\.\d+)?)%/g, "($1/100)");
+        // FACTORIAL
 
-        const toRad = x => isDegree ? x * Math.PI / 180 : x;
+        exp = exp.replace(
+            /(\d+(?:\.\d+)?)!/g,
+            "factorial($1)"
+        );
+
+        // PERCENTAGE
+
+        exp = exp.replace(
+            /(\d+(?:\.\d+)?)%/g,
+            "($1/100)"
+        );
+
+        // DEGREE AND RADIAN
+
+        const toRad = function(x) {
+
+            return isDegree
+                ? x * Math.PI / 180
+                : x;
+
+        };
 
         const sin = x => Math.sin(toRad(x));
         const cos = x => Math.cos(toRad(x));
@@ -79,98 +147,190 @@ function calculate() {
         const sqrt = Math.sqrt;
         const log10 = Math.log10;
         const log = Math.log;
+
         const PI = Math.PI;
         const E = Math.E;
 
+        // VALIDATE EXPRESSION
+
         if (!/^[0-9+\-*/().,\sA-Za-z_]*$/.test(exp)) {
-            throw new Error("Invalid input");
+
+            throw new Error("Invalid expression");
+
         }
+
+        // CALCULATE RESULT
 
         const result = Function(
-            "sin", "cos", "tan",
-            "sqrt", "log10", "log",
-            "factorial", "PI", "E",
+
+            "sin",
+            "cos",
+            "tan",
+            "sqrt",
+            "log10",
+            "log",
+            "factorial",
+            "PI",
+            "E",
+
             `"use strict"; return (${exp})`
+
         )(
-            sin, cos, tan,
-            sqrt, log10, log,
-            factorial, PI, E
+
+            sin,
+            cos,
+            tan,
+            sqrt,
+            log10,
+            log,
+            factorial,
+            PI,
+            E
+
         );
 
-        if (typeof result !== "number" || !Number.isFinite(result)) {
-            throw new Error("Math error");
+        if (
+            typeof result !== "number" ||
+            !Number.isFinite(result)
+        ) {
+
+            throw new Error("Math Error");
+
         }
 
-        answer = Number.parseFloat(result.toPrecision(12));
+        answer = Number(
+            parseFloat(result.toPrecision(12))
+        );
 
-        expressionLine.textContent = expression + " =";
+        expressionLine.textContent =
+            expression + " =";
+
         expression = String(answer);
 
-    } catch (error) {
-        expressionLine.textContent = "Invalid Expression";
+    }
+
+    catch (error) {
+
+        expressionLine.textContent =
+            "Invalid Expression";
+
         expression = "Error";
+
     }
 
     render();
+
 }
 
-// Button clicks
-document.querySelector(".buttons").addEventListener("click", function(event) {
 
-    const button = event.target.closest("button");
+// BUTTON CLICK EVENTS
 
-    if (!button) return;
+document
+    .querySelector(".buttons")
+    .addEventListener("click", function(event) {
 
-    const action = button.dataset.action;
+        const button = event.target.closest("button");
 
-    if (action === "clear") {
-        clearAll();
-    }
-    else if (action === "delete") {
-        deleteLast();
-    }
-    else if (action === "equals") {
-        calculate();
-    }
-    else {
-        append(button.dataset.value);
-    }
+        if (!button) return;
 
-});
+        const action = button.dataset.action;
 
-// DEG / RAD toggle
+        if (action === "clear") {
+
+            clearAll();
+
+        }
+
+        else if (action === "delete") {
+
+            deleteLast();
+
+        }
+
+        else if (action === "equals") {
+
+            calculate();
+
+        }
+
+        else {
+
+            append(button.dataset.value);
+
+        }
+
+    });
+
+
+// DEG / RAD SWITCH
+
 angleButton.addEventListener("click", function() {
+
     isDegree = !isDegree;
+
     render();
+
 });
 
-// Keyboard support
+
+// KEYBOARD SUPPORT
+
 document.addEventListener("keydown", function(event) {
 
     if (/^[0-9.]$/.test(event.key)) {
+
         append(event.key);
+
     }
-    else if (["+", "-", "(", ")"].includes(event.key)) {
+
+    else if (
+        ["+", "-", "(", ")"].includes(event.key)
+    ) {
+
         append(event.key);
+
     }
+
     else if (event.key === "*") {
+
         append("×");
+
     }
+
     else if (event.key === "/") {
+
         event.preventDefault();
+
         append("÷");
+
     }
-    else if (event.key === "Enter" || event.key === "=") {
+
+    else if (
+        event.key === "Enter" ||
+        event.key === "="
+    ) {
+
         event.preventDefault();
+
         calculate();
+
     }
+
     else if (event.key === "Backspace") {
+
         deleteLast();
+
     }
+
     else if (event.key === "Escape") {
+
         clearAll();
+
     }
 
 });
+
+
+// INITIALIZE
 
 render();
